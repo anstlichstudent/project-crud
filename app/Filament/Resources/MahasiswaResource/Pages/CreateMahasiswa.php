@@ -32,4 +32,12 @@ class CreateMahasiswa extends CreateRecord
         }
         return $data;
     }
+
+    public function mount(): void
+    {
+        parent::mount();
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+    }
 }

@@ -16,6 +16,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Facades\Filament;
 
 class MahasiswaResource extends Resource
 {
@@ -73,22 +76,17 @@ class MahasiswaResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(array_filter([
                 TextColumn::make('nim')->label('NIM')->searchable(),
                 TextColumn::make('nama')->label('Nama')->searchable(),
                 TextColumn::make('jenis_kelamin')->label('Jenis Kelamin')->formatStateUsing(fn($state) => $state === 'L' ? 'Laki-laki' : 'Perempuan'),
-                TextColumn::make('tanggal_lahir')->label('Tanggal Lahir')->date('d/m/Y'),
-                TextColumn::make('umur')->label('Umur'),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+                auth()->user()?->isAdmin() ? TextColumn::make('tanggal_lahir')->label('Tanggal Lahir')->date('d/m/Y') : null,
+                auth()->user()?->isAdmin() ? TextColumn::make('umur')->label('Umur') : null,
+                auth()->user()?->isAdmin() ? TextColumn::make('createdBy.name')->label('Created By')->toggleable() : null,
+                auth()->user()?->isAdmin() ? TextColumn::make('updatedBy.name')->label('Updated By')->toggleable() : null,
+            ]))
+            ->actions(auth()->user()?->isAdmin() ? [EditAction::make()] : [])
+            ->bulkActions(auth()->user()?->isAdmin() ? [DeleteBulkAction::make()] : []);
     }
 
     public static function getRelations(): array

@@ -48,6 +48,17 @@ class User extends Authenticatable
 
     public function canAccessPanel(\Filament\Panel\Panel $panel): bool
     {
-        return true;
+        // Hanya user dengan role admin atau user yang bisa login ke panel
+        return in_array($this->role, ['admin', 'user']);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
     }
 }

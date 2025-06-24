@@ -17,4 +17,9 @@ class ListMahasiswas extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->isAdmin();
+    }
 }

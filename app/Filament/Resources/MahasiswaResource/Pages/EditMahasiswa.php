@@ -47,4 +47,12 @@ class EditMahasiswa extends EditRecord
             ->send();
         return $data;
     }
+
+    public function mount(string|int $record): void
+    {
+        parent::mount($record);
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+    }
 }
